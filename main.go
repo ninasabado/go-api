@@ -1,17 +1,13 @@
 package main
- 
+
 import (
-    "fmt"
-    "html"
     "log"
+    "./routes"
     "net/http"
 )
- 
+
 func main() {
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Hello World, here is your path: %q", html.EscapeString(r.URL.Path))
-    })
- 
-    log.Fatal(http.ListenAndServe(":8080", nil))
- 
+    router := routes.SetRoutes()
+
+    log.Fatal(http.ListenAndServe(":8080", router))
 }
