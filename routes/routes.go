@@ -1,69 +1,58 @@
 package routes
 
 import (
-    "fmt"
-    "net/http"
-    "github.com/julienschmidt/httprouter"
+	"../handles"
+	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
-
 /*
-    Define standardized structs, including a Route
+   Define standardized structs, including a Route
 */
 type (
-    Route struct {
-        Path        string
-        Method      string
-        Handle      httprouter.Handle
-    }
+	Route struct {
+		Path   string
+		Method string
+		Handle httprouter.Handle
+	}
 )
 
 /*
-    Define methods that the API supports
+   Source of all the Routes
 */
-const (
-    GET    = "GET"
-    POST   = "POST"
-    PATCH  = "PATCH"
-    DELETE = "DELETE"
-)
+func SetRoutes() *httprouter.Router {
 
-/*
-    Source of all the Routes
-*/
-func SetRoutes() (*httprouter.Router){
+	// Instantiates a router with all defaults enabled
+	router := httprouter.New()
 
-    router := httprouter.New()
+	// TODO: Pass in defined NotFound, MethodNotAllowed and PanicHandler Handlers
+	// router.NotFound = some handler
+	// router.MethodNotAllowed = some handler
+	// router.PanicHandler = func(http.ResponseWriter, *http.Request, interface{})
 
-    setRoutes([]Route{
-        Route{"/", GET, Index},
-        Route{"/hello/:name", GET, Hello},
-    }, router)
+	setRoutes([]Route{
+		Route{"/", http.MethodGet, handles.Index},
+		Route{"/hello/:name", http.MethodGet, handles.Hello},
+	}, router)
 
-    // TODO: Check if any errors occur and bubble it up accordingly
-    return router
-}
-
-/* 
-    Sample function handlers
-    TODO: Eventually have the source be different packages
- */
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-    fmt.Fprint(w, "Welcome!\n")
-}
-
-func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-    fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
+	return router
 }
 
 /*
-    Helper functions
+   Helper functions
 */
-func setRoutes(routes []Route, router *httprouter.Router){
+func setRoutes(routes []Route, router *httprouter.Router) {
 
-    for _, route := range routes {
-        if route.Method == GET {
-            router.GET(route.Path, route.Handle)
-        }
-    }
+	for _, route := range routes {
+		switch route.Method {
+		case http.MethodGet:
+			router.GET(route.Path, route.Handle)
+		case http.MethodPut:
+			router.PUT(route.Path, route.Handle)
+		case http.MethodPatch:
+			router.PATCH(route.Path, route.Handle)
+		case http.MethodDelete:
+			router.DELETE(route.Path, route.Handle)
+		}
+	}
 }

@@ -1,13 +1,14 @@
 package main
 
 import (
-    "log"
-    "./routes"
-    "net/http"
+	"./routes"
+	"log"
+	"net/http"
+	//	"github.com/pkg/errors"
 )
 
 func main() {
-    router := routes.SetRoutes()
+	router := routes.SetRoutes()
 
-    log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
